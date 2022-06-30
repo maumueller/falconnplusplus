@@ -111,6 +111,7 @@ void generateHadamard(int);
 void HD3Generator(int, int);
 void HD3Generator2(int, int);
 void bitHD3Generator2(int);
+void bitHD3Generator2(int, boost::dynamic_bitset<>&, boost::dynamic_bitset<>&);
 
 VectorXi listHD3Generator(int);
 

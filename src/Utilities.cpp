@@ -144,6 +144,26 @@ void bitHD3Generator2(int p_iNumBit)
     }
 }
 
+void bitHD3Generator2(int p_iNumBit, 
+    boost::dynamic_bitset<>& bitHD1, 
+    boost::dynamic_bitset<>& bitHD2)
+{
+    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+    default_random_engine generator(seed);
+    uniform_int_distribution<uint32_t> unifDist(0, 1);
+
+    bitHD1 = boost::dynamic_bitset<> (p_iNumBit);
+    bitHD2 = boost::dynamic_bitset<> (p_iNumBit);
+
+    // Loop col first since we use col-wise
+    for (int d = 0; d < p_iNumBit; ++d)
+    {
+        bitHD1[d] = unifDist(generator) & 1;
+        bitHD2[d] = unifDist(generator) & 1;
+    }
+}
+
+
 /**
 Generate {+1, -1} vector
 **/
