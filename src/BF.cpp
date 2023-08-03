@@ -18,17 +18,23 @@ void BF_TopK_MIPS()
 
     MatrixXi matTopK = MatrixXi::Zero(PARAM_MIPS_TOP_K, PARAM_QUERY_Q); // K x Q
 
-    // For each query
-    #pragma omp parallel for
+//    int num_threads = 64;
+//    omp_set_num_threads(num_threads); //set the number of threads
+
+    #pragma omp parallel for //num_threads(num_threads)
     for (int q = 0; q < PARAM_QUERY_Q; ++q)
     {
+
+//        if (omp_get_num_threads() != num_threads)
+//            abort();
+
         // Reset
         priority_queue<IFPair, vector<IFPair>, greater<IFPair>> queTopK;
 
         // Get query
         VectorXf vecQuery = MATRIX_Q.col(q); // D x 1
 
-        // Compute vector-matrix multiplication
+        // Let EigenLib run SIMD matrix vector multiplication
         VectorXf vecRes = vecQuery.transpose() * MATRIX_X; // (1 x D) * (D x N)
 
         // cout << vecRes.maxCoeff() << endl;
@@ -37,8 +43,6 @@ void BF_TopK_MIPS()
         for (int n = 0; n < PARAM_DATA_N; ++n)
         {
             float fValue = vecRes(n);
-
-            //cout << dValue << endl;
 
             // If we do not have enough top K point, insert
             if (int(queTopK.size()) < PARAM_MIPS_TOP_K)
@@ -54,7 +58,7 @@ void BF_TopK_MIPS()
         }
 
         // Save result into mat_topK
-        // Note that priorityQueue pop smallest element firest
+        // Note that priorityQueue pop smallest element first
 
         IVector vecTopK(PARAM_MIPS_TOP_K, -1);
         for (int k = PARAM_MIPS_TOP_K - 1; k >= 0; --k)
@@ -75,7 +79,7 @@ void BF_TopK_MIPS()
 
     if (PARAM_INTERNAL_SAVE_OUTPUT)
     {
-        string sFileName = "BF_TopK_" + int2str(PARAM_MIPS_TOP_K) + ".txt";
+        string sFileName = PARAM_OUTPUT_FILE + "_TopK_" + int2str(PARAM_MIPS_TOP_K) + ".txt";
 
         outputFile(matTopK, sFileName);
     }

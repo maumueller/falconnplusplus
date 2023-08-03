@@ -13,7 +13,7 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(falconnpp, m) {
     py::class_<FalconnPP>(m, "FalconnPP")
-        .def(py::init<const int&, const int&>())
+        .def(py::init<const int&, const int&, const int&>())
         .def("build", &FalconnPP::buildIndex)
         .def("search", &FalconnPP::query);
 }
